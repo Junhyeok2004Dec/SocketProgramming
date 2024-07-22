@@ -13,33 +13,34 @@
 
 int main() {
 
+	while (true)
+	{
+		WSADATA wsaData;
+		WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	
-	WSADATA wsaData;
-	WSAStartup(MAKEWORD(2, 2), &wsaData);
+		SOCKET hSocket;
+		hSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-	SOCKET hSocket;
-	hSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+		SOCKADDR_IN tAddr = {};
 
-	SOCKADDR_IN tAddr = {};
+		tAddr.sin_family = AF_INET;
+		tAddr.sin_port = htons(PORT);
+		tAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
 
-	tAddr.sin_family = AF_INET;
-	tAddr.sin_port = htons(PORT);
-	tAddr.sin_addr.s_addr = inet_addr(SERVER_IP);
+		connect(hSocket, (SOCKADDR*)&tAddr, sizeof(tAddr));
 
-	connect(hSocket, (SOCKADDR*)&tAddr, sizeof(tAddr));
+		char cMsg[] = "Client Get";
+		send(hSocket, cMsg, strlen(cMsg), 0);
 
-	char cMsg[] = "Client Get";
-	send(hSocket, cMsg, strlen(cMsg), 0);
+		char cBuffer[PACKET_SIZE] = {};
+		recv(hSocket, cBuffer, PACKET_SIZE, 0);
 
-	char cBuffer[PACKET_SIZE] = {};
-	recv(hSocket, cBuffer, PACKET_SIZE, 0);
+		printf("Server Send : %s\n", cBuffer);
 
-	printf("Server Send : %s\n", cBuffer);
 
-	
 
-	closesocket(hSocket);
+		closesocket(hSocket);
 
-	WSACleanup();
+		WSACleanup();
+	}
 }
